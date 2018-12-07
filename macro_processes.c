@@ -19,7 +19,10 @@ int fib(int x) {
 
 int main(){
   int wpid, status, retval;
+  struct timespec before;
+  struct timespec after;
   
+  clock_gettime(CLOCK_REALTIME,&before);
   for (int i = 0; i < NUMTASKS; i++) {
     retval = fork();
     if (retval == -1){
@@ -43,5 +46,9 @@ int main(){
   }
   // wait for all worker processes to finish
   while ((wpid = wait(&status)) > 0);
+  clock_gettime(CLOCK_REALTIME,&after);
+  long difference = ((after.tv_sec * NANOSECONDS_PER_SECOND + after.tv_nsec) - (before.tv_sec * NANOSECONDS_PER_SECOND + before.tv_nsec)) / NUMTASKS;
+  printf("Process per task time: %ld nanoseconds.\n",difference);
+  
   return 0;
 }
