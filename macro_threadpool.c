@@ -46,12 +46,16 @@ void * workerthread(void * tid){
 int main(int argc, char ** argv){
   // If you want to use a different number of workers, specify it as the first
   // argument on the command line
+  struct timespec before;
+  struct timespec after;
+  
   if(argc == 2){
     numworkers = atoi(argv[1]);
   }
   workers = malloc(numworkers * sizeof(struct worker));
   sem_init(&available,0,numworkers);
   pthread_mutex_init(&protect_state,NULL);
+  clock_gettime(CLOCK_REALTIME,&before);
   for(long i = 0; i < numworkers; i++){
     sem_init(&workers[i].done,0,0);
     workers[i].output = -1;
@@ -94,5 +98,8 @@ int main(int argc, char ** argv){
     }
     pthread_mutex_unlock(&protect_state);
   }
+  clock_gettime(CLOCK_REALTIME,&after);
+  long difference = ((after.tv_sec * NANOSECONDS_PER_SECOND + after.tv_nsec) - (before.tv_sec * NANOSECONDS_PER_SECOND + before.tv_nsec)) / NUMTASKS;
+  printf("Threadpool per task time: %ld nanoseconds.\n",difference);
   return 0;
 }
