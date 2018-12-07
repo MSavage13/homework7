@@ -43,6 +43,8 @@ int main(){
   for (int i = 0; i < NUMTASKS; i++) {
     pthread_join(thr[i], NULL);
   }
-  clock_gettime(CLOCK_REALTIME, &after);
+  clock_gettime(CLOCK_REALTIME,&after);
+  long difference = ((after.tv_sec * NANOSECONDS_PER_SECOND + after.tv_nsec) - (before.tv_sec * NANOSECONDS_PER_SECOND + before.tv_nsec)) / NUMTASKS;
+  printf("Thread per task time: %ld nanoseconds.\n",difference);
   return 0;
 }
